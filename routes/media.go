@@ -105,13 +105,16 @@ func resizeAndConvertFromEncodedImageContent(encodedImageContent string, maxDim 
 	processOptions := bimg.Options{StripMetadata: true}
 	decodedBytes, err := base64.StdEncoding.DecodeString(encodedImageContent)
 	if err != nil {
+		err = fmt.Errorf("decodestring: %v", err)
 		return nil, err
 	}
 	if err = validateImageSize(decodedBytes); err != nil {
+		err = fmt.Errorf("validateImageSize: %v", err)
 		return nil, err
 	}
 	imgBytes, err := bimg.NewImage(decodedBytes).Process(processOptions)
 	if err != nil {
+		err = fmt.Errorf("process: %v", err)
 		return nil, err
 	}
 	img := bimg.NewImage(imgBytes)
@@ -119,6 +122,7 @@ func resizeAndConvertFromEncodedImageContent(encodedImageContent string, maxDim 
 	// resize the image
 	resizedImage, err := _resizeImage(img, maxDim)
 	if err != nil {
+		err = fmt.Errorf("resize: %v", err)
 		return nil, err
 	}
 	return resizedImage.Convert(bimg.WEBP)
