@@ -108,10 +108,10 @@ func resizeAndConvertFromEncodedImageContent(encodedImageContent string, maxDim 
 		err = fmt.Errorf("decodestring: %v", err)
 		return nil, err
 	}
-	if err = validateImageSize(decodedBytes); err != nil {
-		err = fmt.Errorf("validateImageSize: %v", err)
-		return nil, err
-	}
+	// if err = validateImageSize(decodedBytes); err != nil {
+	// 	err = fmt.Errorf("validateImageSize: %v", err)
+	// 	return nil, err
+	// }
 	imgBytes, err := bimg.NewImage(decodedBytes).Process(processOptions)
 	if err != nil {
 		err = fmt.Errorf("process: %v", err)
