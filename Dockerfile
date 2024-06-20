@@ -1,10 +1,11 @@
+FROM golang:1.20-alpine as golang
 FROM alpine:latest AS backend
 
 RUN apk update
 RUN apk upgrade
 RUN apk add --update bash cmake g++ gcc git make vips-dev
 
-COPY --from=golang:1.20-alpine /usr/local/go/ /usr/local/go/
+COPY --from=golang /usr/local/go/ /usr/local/go/
 ENV PATH="/usr/local/go/bin:${PATH}"
 
 WORKDIR /deso/src
