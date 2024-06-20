@@ -1,5 +1,5 @@
-FROM golang:1.20-alpine as golang
-FROM alpine:latest AS backend
+FROM docker.io/golang:1.20-alpine as golang
+FROM docker.io/alpine:latest AS backend
 
 RUN apk update
 RUN apk upgrade
