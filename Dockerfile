@@ -1,3 +1,4 @@
+FROM golang:1.20-alpine as golang
 FROM alpine:latest AS backend
 
 RUN apk update
