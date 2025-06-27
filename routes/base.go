@@ -29,7 +29,8 @@ func (fes *APIServer) HealthCheck(ww http.ResponseWriter, rr *http.Request) {
 	// needs blocks state and the header tip is within 10 blocks of the block tip.
 	blockchainHeight := fes.blockchain.BlockTip().Height
 	chainState := fes.blockchain.ChainState()
-	if chainState != lib.SyncStateFullyCurrent &&
+	if !fes.backendServer.DisableNetworking &&
+		chainState != lib.SyncStateFullyCurrent &&
 		!(chainState == lib.SyncStateNeedBlocksss &&
 			fes.blockchain.HeaderTip().Height-blockchainHeight < 10) {
 		_AddInternalServerError(ww, fmt.Sprintf("Waiting for blockchain to sync. "+
