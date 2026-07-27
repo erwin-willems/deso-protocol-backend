@@ -4,8 +4,16 @@ RUN apk update
 RUN apk upgrade
 RUN apk add --update bash cmake g++ gcc git make vips-dev
 
-COPY --from=golang:1.24-alpine /usr/local/go/ /usr/local/go/
+# Pinned to the exact toolchain the currently-healthy validator fleet was built with
+# (go1.24.5, verified against the running binaries). The previous floating `1.24-alpine`
+# tag silently moved to go1.24.13, which meant two images built from the same source
+# could differ in compiler version -- an unacceptable property for a consensus binary.
+COPY --from=golang:1.24.5-alpine /usr/local/go/ /usr/local/go/
 ENV PATH="/usr/local/go/bin:${PATH}"
+# Never auto-download a newer toolchain than the one pinned above. go.mod asks for
+# `toolchain go1.24.1`, which go1.24.5 already satisfies, so this is a guard rather
+# than a behaviour change: without it a future go.mod bump would silently re-float.
+ENV GOTOOLCHAIN=local
 
 WORKDIR /deso/src
 
