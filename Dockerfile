@@ -45,9 +45,7 @@ COPY core/desohash    ../core/desohash
 COPY core/lib         ../core/lib
 COPY core/migrate     ../core/migrate
 
-# Install Delve debugger, specifying the installation path explicitly
 ENV GOPATH=/root/go
-RUN go install github.com/go-delve/delve/cmd/dlv@v1.24.0
 
 # build backend
 RUN CGO_CFLAGS="-std=gnu11" GOOS=linux go build -mod=mod -a -installsuffix cgo -o bin/backend main.go
