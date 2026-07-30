@@ -1,4 +1,4 @@
-FROM docker.io/golang:1.24-alpine as golang
+FROM docker.io/golang:1.24.5-alpine as golang
 FROM docker.io/alpine:latest AS backend
 
 RUN apk update
@@ -9,7 +9,7 @@ RUN apk add --update bash cmake g++ gcc git make vips-dev
 # (go1.24.5, verified against the running binaries). The previous floating `1.24-alpine`
 # tag silently moved to go1.24.13, which meant two images built from the same source
 # could differ in compiler version -- an unacceptable property for a consensus binary.
-COPY --from=golang:1.24.5-alpine /usr/local/go/ /usr/local/go/
+COPY --from=golang /usr/local/go/ /usr/local/go/
 ENV PATH="/usr/local/go/bin:${PATH}"
 # Never auto-download a newer toolchain than the one pinned above. go.mod asks for
 # `toolchain go1.24.1`, which go1.24.5 already satisfies, so this is a guard rather
