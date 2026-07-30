@@ -1209,6 +1209,8 @@ type GetSinglePostRequest struct {
 	FetchParents               bool   `safeForLogging:"true"`
 	CommentOffset              uint32 `safeForLogging:"true"`
 	CommentLimit               uint32 `safeForLogging:"true"`
+	// If set to true, hidden comments will be returned in the response.
+	FetchHiddenComments        bool   `safeForLogging:"true"`
 	ReaderPublicKeyBase58Check string `safeForLogging:"true"`
 	// How many levels of replies will be retrieved. If unset, will only retrieve the top-level replies.
 	ThreadLevelLimit uint32 `safeForLogging:"true"`
@@ -1514,13 +1516,14 @@ func (fes *APIServer) GetSinglePostComments(
 		commentAuthorIsCurrentPoster := reflect.DeepEqual(commentEntry.PosterPublicKey, posterPublicKeyBytes)
 		// Skip comments that:
 		//  - Don't have a profile (it was most likely banned). UPDATE: only remove if public key is blacklisted.
-		//	- Are hidden *AND* don't have comments. Keep hidden posts with comments.
+		//	- Are hidden *AND* don't have comments unless hidden comments are explicitly requested.
 		//  - isDeleted (this was already filtered in an earlier stage and should never be true)
 		//	- Skip comment is it's by the poster of the single post we are fetching and the currentPoster is blocked by
 		// 	the reader
 		_, pubKeyExistsInMap := profilePubKeyMap[lib.MakePkMapKey(commentEntry.PosterPublicKey)]
+		skipHiddenComment := commentEntry.IsHidden && commentEntry.CommentCount == 0 && !requestData.FetchHiddenComments
 		if (commentProfileEntryResponse == nil && !pubKeyExistsInMap) || commentEntry.IsDeleted() ||
-			(commentEntry.IsHidden && commentEntry.CommentCount == 0) ||
+			skipHiddenComment ||
 			(commentAuthorIsCurrentPoster && isCurrentPosterBlocked) {
 			continue
 		}
